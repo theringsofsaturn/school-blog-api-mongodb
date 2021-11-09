@@ -1,0 +1,37 @@
+{
+  "name": "Strive-Blog-Back-End-New",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -e js -r dotenv/config ./src/server.js",
+    "start": "node ./src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cloudinary": "^1.27.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-list-endpoints": "^6.0.0",
+    "express-validator": "^6.13.0",
+    "fs": "0.0.1-security",
+    "fs-extra": "^10.0.0",
+    "http-errors": "^1.8.0",
+    "image-data-uri": "^2.0.1",
+    "json2csv": "^5.0.6",
+    "mongoose": "^6.0.12",
+    "multer": "^1.4.3",
+    "multer-storage-cloudinary": "^4.0.0",
+    "pdfmake": "^0.2.2",
+    "stream": "0.0.2",
+    "uniqid": "^5.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  }
+}

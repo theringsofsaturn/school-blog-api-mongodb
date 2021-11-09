@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Giacomo",
+    "surname": "Casanova",
+    "email": "giacomocasanova@gmail.com",
+    "birthDate": "02/04/1725",
+    "avatar": "",
+    "id": "4n8746gkvbffxoc",
+    "createdAt": "2021-10-28T20:56:39.996Z"
+  },
+  {
+    "name": "Diego",
+    "surname": "Maradona",
+    "email": "manodedios@gmail.com",
+    "birthDate": "30/10/1960",
+    "avatar": "",
+    "id": "4n8746gkvbfhcun",
+    "createdAt": "2021-10-28T20:57:46.319Z"
+  },
+  {
+    "name": "Emilian",
+    "surname": "Kasemi",
+    "email": "emiliankasemi@gmail.com",
+    "birthDate": "18/08/1985",
+    "avatar": "https://res.cloudinary.com/dqiyjy9ye/image/upload/v1635731252/striveBlog/avatars/wkidzbdlv0b0ozor7j4f.jpg",
+    "id": "4n8746gkvbfdfd5",
+    "createdAt": "2021-10-28T20:54:42.952Z"
+  }
+]
