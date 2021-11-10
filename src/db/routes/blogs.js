@@ -23,8 +23,9 @@ mongoBlogPostsRouter.delete("/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
     const deletedPost = await BlogPost.findByIdAndDelete(postId);
-    if (!deletedPost) {
-      res.status(404).json({ message: "Post not found" });
+
+    if (deletedPost) {
+      res.status(204).json("Post has been deleted");
     } else {
       next(createError(404, `Post with _id ${postId} Not Found!`));
     }
@@ -35,10 +36,15 @@ mongoBlogPostsRouter.delete("/:postId", async (req, res) => {
 });
 
 // *************** GET SPECIFIC POST ********************
-mongoBlogPostsRouter.get("/find/:id", async (req, res) => {
+mongoBlogPostsRouter.get("/find/:postId", async (req, res) => {
   try {
-    const blogPost = await BlogPost.findById(req.params.id);
-    res.status(200).json(blogPost);
+    const postId = req.params.postId;
+    const blogPost = await BlogPost.findById(postId);
+    if (!blogPost) {
+      res.status(404).json({ message: "Post not found" });
+    } else {
+      res.status(200).json(blogPost);
+    }
   } catch (error) {
     console.log(error);
     next(createError(400, error.message));
