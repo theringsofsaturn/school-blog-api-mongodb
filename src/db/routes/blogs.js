@@ -145,36 +145,68 @@ mongoBlogPostsRouter.get("/:postId/comments", async (req, res, next) => {
   }
 });
 
-// *************** DELETE A COMMENT FROM A BLOG POST ********************
-mongoBlogPostsRouter.delete("/:postId/comments/:commentId", async (req, res, next) => {
-  try {
-    const postId = req.params.postId;
-    const blogToDelete = await BlogPost.findById(postId,{
-        comments:{
-            $elemMatch:{_id:req.params.commentId}
-        }
-    })
-    const blog = await BlogPost.findByIdAndUpdate(
-      req.params.postId,
-      {
-        $pull: {
-          comments: {
-            _id: req.params.commentId,
+// *************** GET SINGLE COMMENT ********************
+mongoBlogPostsRouter.get(
+  "/:postId/comments/:commentId",
+  async (req, res, next) => {
+    try {
+      const postId = req.params.postId;
+      const commentId = req.params.postId;
+      const blog = await BlogPost.findById(postId, {
+        comments: {
+          $elemMatch: {
+            _id: commentId,
           },
         },
-      },
-      {
-        new: true,
+      });
+      if (blog) {
+        if (blog.comments.length > 0) {
+          res.send(blog.comments[0]);
+        } else {
+          next(createError(404, `no comments found`));
+        }
+      } else {
+        next(createError(404, `blog not found`));
       }
-    );
-    if (blog) {
-      res.send(blogToDelete.comments[0]._doc);
-    } else {
-      next(createError(404, `blog not found`));
+    } catch (error) {
+      next(createError(500, "Error while fetching a single comment"));
     }
-  } catch (error) {
-    next(createError(500, "Error while deleting a comment"));
   }
-});
+);
+
+// *************** DELETE A COMMENT FROM A BLOG POST ********************
+mongoBlogPostsRouter.delete(
+  "/:postId/comments/:commentId",
+  async (req, res, next) => {
+    try {
+      const postId = req.params.postId;
+      const blogToDelete = await BlogPost.findById(postId, {
+        comments: {
+          $elemMatch: { _id: req.params.commentId },
+        },
+      });
+      const blog = await BlogPost.findByIdAndUpdate(
+        req.params.postId,
+        {
+          $pull: {
+            comments: {
+              _id: req.params.commentId,
+            },
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      if (blog) {
+        res.send(blogToDelete.comments[0]._doc);
+      } else {
+        next(createError(404, `blog not found`));
+      }
+    } catch (error) {
+      next(createError(500, "Error while deleting a comment"));
+    }
+  }
+);
 
 export default mongoBlogPostsRouter;
