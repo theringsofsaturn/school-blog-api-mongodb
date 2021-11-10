@@ -47,40 +47,133 @@ mongoBlogPostsRouter.get("/find/:postId", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    next(createError(400, error.message));
+    next(createError(500, "An Error ocurred while getting the post"));
   }
 });
 
 // *************** GET ALL BLOG POSTS ********************
-// if no query is sent, is just gonna return ALL posts. But if you add for example "/?new=true", is gonna return only last 10 posts
-mongoBlogPostsRouter.get("/find/:id", async (req, res, next) => {
-  const query = req.query.new; // (or new posts) new is the key
+mongoBlogPostsRouter.get("/", async (req, res) => {
   try {
-    // if there is a query (which means if we are fetching only new blogs), is gonna fetch only last 10 posts
-    // if there is no query, is gonna fetch all posts
-    const allPosts = query
-      ? await BlogPost.find().sort({ _id: -1 }).limit(10)
-      : await BlogPost.find();
-    res.status(200).json(allPosts);
+    const query = q2m(req.query);
+
+    const { total, posts } = await BlogPost.findPostsWithAuthors(query);
+    res.send({ links: query.links("/mongoBlogPosts", total), total, posts });
   } catch (error) {
     console.log(error);
-    next(createError(400, error.message));
+    next(createError(500, "An Error ocurred while getting the list of posts"));
   }
 });
 
 // *************** UPDATE ********************
-mongoBlogPostsRouter.put("/:id", async (req, res) => {
+mongoBlogPostsRouter.put("/:postId", async (req, res) => {
   try {
+    const postId = req.params.postId;
     const updatedPost = await BlogPost.findByIdAndUpdate(
-      req.params.id,
+      postId,
       {
         $set: req.body,
       },
       { new: true }
     );
-    res.status(200).json(updatedPost);
+
+    if (updatedPost) {
+      res.status(200).json(updatedPost);
+    } else {
+      next(createError(404, `Post with _id ${postId} not Found!`));
+    }
   } catch (err) {
-    res.status(500).json(err);
+    if (error.name === "ValidationError") {
+      next(createError(400, error));
+    } else {
+      next(
+        createError(
+          500,
+          `An Error ocurred while updating the post ${req.params.postId}`
+        )
+      );
+    }
+  }
+});
+
+// *********************** COMMENTS ************************
+
+// ************** CREATES NEW COMMENT IN A SPECIFIC BLOG POST **************
+
+mongoBlogPostsRouter.post("/:postId/comments", async (req, res, next) => {
+  try {
+    const newComment = req.body;
+    console.log(newComment);
+
+    const postId = req.params.postId;
+    const updatedPost = await BlogPost.findByIdAndUpdate(
+      postId,
+      { $push: { comments: newComment } },
+      { new: true }
+    );
+
+    if (updatedPost) {
+      res.send(updatedPost);
+    } else {
+      next(createError(404, `Post with _id ${postId} not Found!`));
+    }
+  } catch (error) {
+    if (error.name === "validationError") {
+      next(createError(400, error));
+    } else {
+      next(
+        createError(
+          500,
+          `An Error ocurred while posting a comment on post ID: ${req.params.postId}`
+        )
+      );
+    }
+  }
+});
+
+// *************** GET LIST OF COMMENTS FOR A BLOG POST ********************
+mongoBlogPostsRouter.get("/:postId/comments", async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const blog = await BlogPost.findById(postId);
+    if (blog) {
+      res.send(blog.comments);
+    } else {
+      next(createError(404, "blog not found"));
+    }
+  } catch (error) {
+    next(createError(500, "Error while fetching comments "));
+  }
+});
+
+// *************** DELETE A COMMENT FROM A BLOG POST ********************
+mongoBlogPostsRouter.delete("/:postId/comments/:commentId", async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const blogToDelete = await BlogPost.findById(postId,{
+        comments:{
+            $elemMatch:{_id:req.params.commentId}
+        }
+    })
+    const blog = await BlogPost.findByIdAndUpdate(
+      req.params.postId,
+      {
+        $pull: {
+          comments: {
+            _id: req.params.commentId,
+          },
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    if (blog) {
+      res.send(blogToDelete.comments[0]._doc);
+    } else {
+      next(createError(404, `blog not found`));
+    }
+  } catch (error) {
+    next(createError(500, "Error while deleting a comment"));
   }
 });
 

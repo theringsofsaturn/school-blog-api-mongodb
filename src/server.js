@@ -8,6 +8,7 @@ import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./services/authors/index.js"
 import blogPostsRouter from "./services/blogs/index.js"
 import mongoBlogPostsRouter from "./db/routes/blogs.js"
+import mongoAuthorsRouter from "./db/routes/authors.js"
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ server.use(cors()) //cors connects BE with FE *** the same as app.use(cors());
 server.use("/authors", authorsRouter)
 server.use("/blogPosts", blogPostsRouter)
 server.use("/mongoBlogPosts", mongoBlogPostsRouter)
+server.use("/mongoAuthors", mongoAuthorsRouter)
 
 // *********************** ERROR MIDDLEWARES ***************************
 // always to be defined after all the routes
