@@ -1,6 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import BlogPost from "../models/BlogPost.js";
+import q2m from "query-to-mongo";
 
 const mongoBlogPostsRouter = express.Router();
 
@@ -18,10 +19,15 @@ mongoBlogPostsRouter.post("/", async (req, res, next) => {
 });
 
 // *************** DELETE ********************
-mongoBlogPostsRouter.delete("/:id", async (req, res) => {
+mongoBlogPostsRouter.delete("/:postId", async (req, res) => {
   try {
-    await BlogPost.findByIdAndDelete(req.params.id);
-    res.status(200).json("Blog Post has been deleted");
+    const postId = req.params.postId;
+    const deletedPost = await BlogPost.findByIdAndDelete(postId);
+    if (!deletedPost) {
+      res.status(404).json({ message: "Post not found" });
+    } else {
+      next(createError(404, `Post with _id ${postId} Not Found!`));
+    }
   } catch (error) {
     console.log(error);
     next(createError(400, error.message));
@@ -41,7 +47,7 @@ mongoBlogPostsRouter.get("/find/:id", async (req, res) => {
 
 // *************** GET ALL BLOG POSTS ********************
 // if no query is sent, is just gonna return ALL posts. But if you add for example "/?new=true", is gonna return only last 10 posts
-mongoBlogPostsRouter.get("/find/:id", async (req, res) => {
+mongoBlogPostsRouter.get("/find/:id", async (req, res, next) => {
   const query = req.query.new; // (or new posts) new is the key
   try {
     // if there is a query (which means if we are fetching only new blogs), is gonna fetch only last 10 posts

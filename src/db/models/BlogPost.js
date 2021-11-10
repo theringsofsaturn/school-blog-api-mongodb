@@ -4,7 +4,7 @@ const BlogsSchema = new mongoose.Schema(
   {
     category: { type: String, required: true },
     title: { type: String, required: true },
-    cover: { type: String, required: true },
+    cover: { type: String },
     readTime: {
       type: Object,
       properties: {
@@ -16,7 +16,7 @@ const BlogsSchema = new mongoose.Schema(
         },
       },
     },
-    author: { type: String, required: true },
+    author: { type: String, },
     avatar: { type: String },
 
     // comments: [
