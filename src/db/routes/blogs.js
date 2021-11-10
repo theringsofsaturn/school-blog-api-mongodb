@@ -25,7 +25,7 @@ mongoBlogPostsRouter.delete("/:postId", async (req, res) => {
     const deletedPost = await BlogPost.findByIdAndDelete(postId);
 
     if (deletedPost) {
-      res.status(204).json("Post has been deleted");
+      res.status(204).json({ message: "Post deleted" });
     } else {
       next(createError(404, `Post with _id ${postId} Not Found!`));
     }
