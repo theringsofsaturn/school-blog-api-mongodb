@@ -116,4 +116,23 @@ BlogPost.static('findPostComment', async function (postId, commentId) {
 })
 
 
+// ******************** STATIC FUNTION FOR AUTHORS ******************** 
+blogSchema.static("findAuthors", async function (query) {
+  const total = await this.countDocuments(query.criteria)
+  const blogs = await this.find(query.criteria, query.options.fields)
+  .skip(query.options.skip)
+  .limit(query.options.limit)
+  .sort(query.options.sort)
+  .populate("authors")
+
+  return { total, blogs }
+
+})
+
+blogSchema.static("findAuthor", async function (id) {
+      const blog = await this.findById(id).populate("authors")
+      return blog
+})
+
+
 export default mongoose.model("BlogPost", BlogPost);
