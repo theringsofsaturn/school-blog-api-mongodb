@@ -51,4 +51,20 @@ mongoAuthorsRouter.get('/:authorId', async (req, res, next) => {
     }
 })
 
+// ****************** DELETE AN AUTHOR ****************
+mongoAuthorsRouter.delete('/:authorId', async (req, res, next) => {
+    try {
+        const authorId = req.params.authorId
+        const deletedAuthor = await AuthorModel.findByIdAndDelete(authorId)
+
+        if (deletedAuthor) {
+            res.status(204).send()
+        } else {
+            next(createError(404, `Author with _id ${authorId} was not Found!`))
+        }
+    } catch (error) {
+        next(createError(500, `An Error ocurred while deleting the author ${req.params.authorId}`))
+    }
+})
+
 export default mongoAuthorsRouter;
