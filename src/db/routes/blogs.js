@@ -56,7 +56,7 @@ mongoBlogPostsRouter.get("/", async (req, res) => {
   try {
     const query = q2m(req.query);
 
-    const { total, posts } = await BlogPost.findPostsWithAuthors(query);
+    const { total, posts } = await BlogPost.findPosts(query);
     res.send({ links: query.links("/mongoBlogPosts", total), total, posts });
   } catch (error) {
     console.log(error);

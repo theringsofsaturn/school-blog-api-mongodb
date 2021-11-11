@@ -66,4 +66,54 @@ const BlogPost = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Blogs", BlogPost);
+//************** STATIC FUNCTION FOR POSTS **************
+BlogPost.static("findPosts", async function (query) {
+  const total = await this.countDocuments(query.criteria);
+  const posts = await this.find(query.criteria, query.options.fields)
+    .skip(query.options.skip)
+    .limit(query.options.limit)
+    .sort(query.options.sort)
+    .populate("author", { _id: 0, name: 1, avatar: 1 });
+
+  return { total, posts };
+});
+
+BlogPost.static("findPost", async function (postId) {
+  const post = await this.findById(postId).populate("author", {
+    _id: 0,
+    name: 1,
+    avatar: 1,
+  });
+  return post;
+});
+
+
+//************** STATIC FUNCTION FOR COMMENTS **************
+BlogPost.static('findPostComments', async function (postId) {
+  const postComments = await this.findById(postId)
+      .populate({ 
+          path: 'comments', 
+          populate: { 
+              path: "author", 
+              select: {_id: 0, name: 1, avatar: 1}
+          }
+      })
+
+  return postComments
+})
+
+BlogPost.static('findPostComment', async function (postId, commentId) {
+  const postComment = await this.findById(postId, { comments: { $elemMatch: { _id: commentId}}})
+      .populate({ 
+          path: 'comments', 
+          populate: { 
+              path: "author", 
+              select: {_id: 0, name: 1, avatar: 1}
+          }
+      })
+
+  return postComment
+})
+
+
+export default mongoose.model("BlogPost", BlogPost);
