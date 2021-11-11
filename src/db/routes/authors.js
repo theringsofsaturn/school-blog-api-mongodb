@@ -67,4 +67,23 @@ mongoAuthorsRouter.delete('/:authorId', async (req, res, next) => {
     }
 })
 
+// ********************** UPDATE AN AUTHOR **********************
+mongoAuthorsRouter.put('/:authorId', async (req, res, next) => {
+    try {
+        const authorId = req.params.authorId
+        const modifiedAuthor = await AuthorModel.findByIdAndUpdate(authorId, req.body, {
+            new: true,
+            runValidators: true,
+        } )
+
+        if(modifiedAuthor) {
+            res.send(modifiedAuthor)
+        } else {
+            next(createError(404, `Author with _id ${authorId} was not Found!`))
+        }
+    } catch (error) {
+        next(createError(500, `An Error ocurred while updating the author ${req.params.authorId}`))
+    }
+})
+
 export default mongoAuthorsRouter;
