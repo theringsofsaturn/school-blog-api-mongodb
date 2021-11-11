@@ -3,6 +3,29 @@ import createError from "http-errors";
 import q2m from "query-to-mongo"
 import AuthorModel from "../models/Authors.js"
 
-const mongoAuthorsPostsRouter = express.Router();
+const mongoAuthorsRouter = express.Router();
 
-export default mongoAuthorsPostsRouter;
+// **************** CREATE NEW AUTHOR ****************
+
+mongoAuthorsRouter.post('/', async (req, res, next) => {
+    try {
+        const newAuthor = new AuthorModel(req.body)
+        const { _id } = await newAuthor.save()
+
+        res.status(201).send({ _id })
+
+    } catch (error) {
+        console.log(error.name);
+        if(error.name === "ValidationError") {
+            next(createError(400, error))
+        } else {
+            console.log(error)
+            next(createError(500, "An Error ocurred while creating a new author"))
+        }
+    }
+})
+
+// ********************* GET ALL AUTHORS *********************
+
+
+export default mongoAuthorsRouter;
