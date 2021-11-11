@@ -35,4 +35,20 @@ mongoAuthorsRouter.get('/', async (req, res, next) => {
     }
 })
 
+// **************** GET AUTHOR BY ID ****************
+mongoAuthorsRouter.get('/:authorId', async (req, res, next) => {
+    try {
+        const authorId = req.params.authorId
+        const author = await AuthorModel.findById(authorId)
+
+        if(author) {
+            res.send(author)
+        } else {
+            next(createError(404, `author with _id ${authorId} was not Found!`))
+        }
+    } catch (error) {
+        next(createError(500, "An Error ocurred while getting the author"))
+    }
+})
+
 export default mongoAuthorsRouter;
