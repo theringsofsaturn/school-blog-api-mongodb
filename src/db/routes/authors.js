@@ -26,6 +26,13 @@ mongoAuthorsRouter.post('/', async (req, res, next) => {
 })
 
 // ********************* GET ALL AUTHORS *********************
-
+mongoAuthorsRouter.get('/', async (req, res, next) => {
+    try {
+        const authors = await AuthorModel.find()
+        res.send(authors)
+    } catch (error) {
+        next(createError(500, "An Error ocurred while getting the list of authors"))
+    }
+})
 
 export default mongoAuthorsRouter;
