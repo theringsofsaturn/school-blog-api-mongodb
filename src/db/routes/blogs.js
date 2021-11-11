@@ -36,7 +36,7 @@ mongoBlogPostsRouter.delete("/:postId", async (req, res) => {
 });
 
 // *************** GET SPECIFIC POST ********************
-mongoBlogPostsRouter.get("/find/:postId", async (req, res) => {
+mongoBlogPostsRouter.get("/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
     const blogPost = await BlogPost.findById(postId);
@@ -210,26 +210,33 @@ mongoBlogPostsRouter.delete(
 );
 
 // *************** UPDATE A COMMENT ON A BLOG POST ********************
-mongoBlogPostsRouter.put('/:postId/comments/:commentId', async (req, res, next) => {
-  try {
-      const postId = req.params.postId
-      const commentId = req.params.commentId
+mongoBlogPostsRouter.put(
+  "/:postId/comments/:commentId",
+  async (req, res, next) => {
+    try {
+      const postId = req.params.postId;
+      const commentId = req.params.commentId;
 
-      const post = await BlogPost.findOneAndUpdate( 
-          { _id: postId , "comments._id": commentId, }, 
-          { $set: { "comments.$": req.body, }}, 
-          { new: true, runValidators: true, }
-      )
+      const post = await BlogPost.findOneAndUpdate(
+        { _id: postId, "comments._id": commentId },
+        { $set: { "comments.$": req.body } },
+        { new: true, runValidators: true }
+      );
       if (post) {
-          res.send(post)
+        res.send(post);
       } else {
-          next(createError(404, `Post with _id ${postId} was not Found!`))
+        next(createError(404, `Post with _id ${postId} was not Found!`));
       }
-  } catch (error) {
-      console.log(error)
-      next(createError(500, `An Error ocurred while updating comment with ID: ${req.params.commentId}`))
+    } catch (error) {
+      console.log(error);
+      next(
+        createError(
+          500,
+          `An Error ocurred while updating comment with ID: ${req.params.commentId}`
+        )
+      );
+    }
   }
-})
-
+);
 
 export default mongoBlogPostsRouter;
