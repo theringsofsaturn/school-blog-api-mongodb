@@ -1,26 +1,31 @@
 import mongoose from "mongoose";
 
-const AuthorModel = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    description: "name is required",
+const AuthorModel = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    surname: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    dateOfBirth: {
+      type: String,
+      required: true,
+    },
+    avatar: {
+      type: String,
+      default: `https://ui-avatars.com/api/?name=Emilian+Kasemi`,
+    },
   },
-  surname: {
-    type: String,
-    required: true,
-    description: "surname is required",
-  },
-  email: {
-    type: String,
-    required: true,
-    description: "email is required",
-  },
-  avatar: {
-    type: String,
-    required: true,
-    description: "avatar is required",
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.model("Author", AuthorModel);
